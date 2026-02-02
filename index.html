@@ -1,88 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>You're Invited 👀</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #ffecd2, #fcb69f);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
+<meta charset="UTF-8" />
+<title>Invite Challenge 😈</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    overflow: hidden;
+  }
+
+  .container {
+    text-align: center;
+    padding: 20px;
+    max-width: 440px;
+  }
+
+  h1 { margin-bottom: 6px; }
+
+  .attempts {
+    margin-top: 5px;
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  .doors {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 25px;
+  }
+
+  .door {
+    height: 90px;
+    background: linear-gradient(#9b5e2e, #5a2e14);
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s, opacity 0.3s;
+  }
+
+  .door:hover {
+    transform: scale(1.05);
+  }
+
+  .***** {
+    width: 10px;
+    height: 10px;
+    background: gold;
+    border-radius: 50%;
+    position: absolute;
+    right: 8px;
+    top: 45px;
+  }
+
+  .hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .msg {
+    margin-top: 20px;
+    min-height: 70px;
+    font-size: 15px;
+  }
+
+  .invite {
+    animation: pop 0.6s ease;
+  }
+
+  @keyframes pop {
+    from { transform: scale(0.6); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .confetti {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    animation: fall linear forwards;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(120vh) rotate(720deg);
+      opacity: 0;
     }
-    .card {
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
-      text-align: center;
-      max-width: 360px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    }
-    h1 { margin-bottom: 0.5rem; }
-    p { color: #444; }
-    button {
-      background: #ff6b6b;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-    button:hover { opacity: 0.9; }
-    .timer {
-      margin-top: 1rem;
-      font-size: 14px;
-      color: #777;
-    }
-  </style>
+  }
+</style>
 </head>
+
 <body>
+<div class="container">
+  <h1>🚪 Pick The Right Door</h1>
+  <p>10 doors. 1 invite. 3 attempts.</p>
+  <div class="attempts" id="attempts">❤️ Attempts left: 3</div>
 
-<div class="card" id="invite">
-  <h1>🏠 Home Invite</h1>
-  <p><strong>Host:</strong> Pritam</p>
-  <p><strong>When:</strong> Saturday, 7 PM</p>
-  <p><strong>Where:</strong> My place 😌</p>
+  <div class="doors" id="doors"></div>
 
-  <button onclick="rsvp()">I’m Coming 🙌</button>
-
-  <div class="timer" id="timer"></div>
+  <div class="msg" id="msg"></div>
 </div>
 
 <script>
-  // Invite expiry time (set your own)
-  const expiry = new Date();
-  expiry.setHours(expiry.getHours() + 6); // valid for 6 hours
+  const winningDoor = Math.floor(Math.random() * 10);
+  let attemptsLeft = 3;
+  let finished = false;
 
-  function updateTimer() {
-    const now = new Date();
-    const diff = expiry - now;
+  const roastMessages = [
+    "❌ Wrong door. This one smells like regret.",
+    "😂 Not until I get my Matcha Treat",
+    "🤡 Bold choice. Terrible outcome.",
+    "💀 This door just judged you silently.",
+    "🧹 Congrats, you unlocked cleaning duty.",
+    "📉 Decision-making skills downgraded.",
+    "🫠 That door said ‘absolutely not’.",
+    "🚫 Entry denied. Confidence misplaced.",
+    "🐸 You picked… poorly.. Just Like your ex."
+  ];
 
-    if (diff <= 0) {
-      document.getElementById("invite").innerHTML =
-        "<h1>⏰ Invite Expired</h1><p>This invite self-destructed.</p>";
-      return;
+  const doorsContainer = document.getElementById("doors");
+  const msg = document.getElementById("msg");
+  const attemptsUI = document.getElementById("attempts");
+
+  for (let i = 0; i < 10; i++) {
+    const door = document.createElement("div");
+    door.className = "door";
+    door.innerHTML = `<div class="*****"></div>`;
+    door.onclick = () => pickDoor(i, door);
+    doorsContainer.appendChild(door);
+  }
+
+  function pickDoor(index, doorEl) {
+    if (finished || attemptsLeft <= 0) return;
+
+    if (index === winningDoor) {
+      finished = true;
+      msg.innerHTML = `
+        <div class="invite">
+          🎉 <b>YOU WON</b> 🎉<br><br>
+          🏠 Home Invite Unlocked<br>
+          🗓 Whenever you want<br>
+          ⏰  Just a call away<br><br>
+          Come hungry. Leave happy 😌
+        </div>`;
+      confetti();
+    } else {
+      attemptsLeft--;
+      doorEl.classList.add("hidden");
+
+      attemptsUI.textContent = `❤️ Attempts left: ${attemptsLeft}`;
+      msg.textContent =
+        roastMessages[Math.floor(Math.random() * roastMessages.length)];
+
+      if (attemptsLeft === 0) {
+        finished = true;
+        setTimeout(gameOver, 500);
+      }
     }
-
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    document.getElementById("timer").innerText =
-      `Invite expires in ${hours}h ${minutes}m`;
   }
 
-  function rsvp() {
-    alert("🎉 RSVP received! See you soon.");
+  function gameOver() {
+    msg.innerHTML = `
+      💀 <b>GAME OVER</b> 💀<br><br>
+      You had 3 chances.<br>
+      The door had 0 mercy.<br><br>
+      Refresh to beg for redemption 😌
+    `;
   }
 
-  updateTimer();
-  setInterval(updateTimer, 60000);
+  function confetti() {
+    for (let i = 0; i < 140; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.top = "-10px";
+      c.style.background =
+        `hsl(${Math.random() * 360}, 100%, 60%)`;
+      c.style.animationDuration =
+        2 + Math.random() * 2 + "s";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }
+  }
 </script>
-
 </body>
 </html>

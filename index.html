@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>You're Invited 👀</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 360px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    h1 { margin-bottom: 0.5rem; }
+    p { color: #444; }
+    button {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    button:hover { opacity: 0.9; }
+    .timer {
+      margin-top: 1rem;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card" id="invite">
+  <h1>🏠 Home Invite</h1>
+  <p><strong>Host:</strong> Pritam</p>
+  <p><strong>When:</strong> Saturday, 7 PM</p>
+  <p><strong>Where:</strong> My place 😌</p>
+
+  <button onclick="rsvp()">I’m Coming 🙌</button>
+
+  <div class="timer" id="timer"></div>
+</div>
+
+<script>
+  // Invite expiry time (set your own)
+  const expiry = new Date();
+  expiry.setHours(expiry.getHours() + 6); // valid for 6 hours
+
+  function updateTimer() {
+    const now = new Date();
+    const diff = expiry - now;
+
+    if (diff <= 0) {
+      document.getElementById("invite").innerHTML =
+        "<h1>⏰ Invite Expired</h1><p>This invite self-destructed.</p>";
+      return;
+    }
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    document.getElementById("timer").innerText =
+      `Invite expires in ${hours}h ${minutes}m`;
+  }
+
+  function rsvp() {
+    alert("🎉 RSVP received! See you soon.");
+  }
+
+  updateTimer();
+  setInterval(updateTimer, 60000);
+</script>
+
+</body>
+</html>
